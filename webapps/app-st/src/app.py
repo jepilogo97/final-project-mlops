@@ -11,7 +11,7 @@ if 'app' not in st.session_state:
 
 
 def render():
-    st.title("Interacción con modelos")
+    st.title("Interacción con modelos MLOps")
 
     mlmodel_selection.render()
     (_, mlmodel_type) = get_mlmodel_type_state_kv()
