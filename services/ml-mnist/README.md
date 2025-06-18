@@ -76,6 +76,8 @@ En [src/entities.py](src/entities.py) se encuentran los modelos de solicitud-res
 
 2. Definición de variables de ambiente:
     ```sh
+    export ASSETS_DIR=assets/
+
     export MLMODELS_DIR=
 
     # modelo local
