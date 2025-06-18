@@ -1,4 +1,4 @@
 google-cloud-storage==3.1.0
 onnxruntime==1.22.0
 scikit-learn==1.6.1
-skl2onnx 1.19.1
+skl2onnx==1.19.1
