@@ -8,7 +8,8 @@ import onnxruntime as ort
 import PIL
 import torchvision.transforms as transforms
 
-from entities import PredictRequest, PredictResponse
+from config import IMAGE_DEMO_FILE
+from entities import PredictRequest, PredictResponse, PredictDemoResponse
 from utils import download_model_from_gcs, download_model_from_http
 
 
@@ -62,6 +63,27 @@ class ModelService:
         return PredictResponse(
             model_id=self.model_id,
             predictions=predictions
+        )
+
+
+    def predict_demo(self) -> PredictDemoResponse:
+        input_name = self.session.get_inputs()[0].name
+        output_name = self.session.get_outputs()[0].name
+
+        image = PIL.Image.open(IMAGE_DEMO_FILE)
+        image_data = ModelService.preprocess_image(image)
+        results = self.session.run([output_name], {input_name: image_data})
+        prediction = np.argmax(results[0])
+
+        image_processed = PIL.Image.fromarray((image_data.squeeze() * 255).astype(np.uint8))
+        buffered = io.BytesIO()
+        image_processed.save(buffered, format="PNG")
+        image_processed_base64: str = base64.b64encode(buffered.getvalue()).decode("utf-8")
+
+        return PredictDemoResponse(
+            model_id=self.model_id,
+            predictions=[prediction],
+            source_demo_image_base64=image_processed_base64
         )
 
 

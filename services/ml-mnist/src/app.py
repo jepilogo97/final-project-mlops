@@ -5,7 +5,7 @@ from fastapi import FastAPI, HTTPException, status
 from pydantic import BaseModel
 
 from config import MLMODEL_URI
-from entities import PredictRequest, PredictResponse
+from entities import PredictRequest, PredictResponse, PredictDemoResponse
 from mlmodel import ModelService
 
 
@@ -45,6 +45,18 @@ def check_ready():
 def predict(input_request: PredictRequest) -> PredictResponse:
     try:
         return mlmodel_service.predict(input_request)
+    except Exception as e:
+        logger.error(f"Error during prediction: {e}")
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail="Error during prediction"
+        )
+
+
+@app.post("/predict-demo", tags=["inference"])
+def predict() -> PredictDemoResponse:
+    try:
+        return mlmodel_service.predict_demo()
     except Exception as e:
         logger.error(f"Error during prediction: {e}")
         raise HTTPException(

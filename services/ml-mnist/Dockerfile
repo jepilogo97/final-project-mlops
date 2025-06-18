@@ -16,7 +16,9 @@ CMD ["echo", "testing..."]
 
 
 FROM base AS service
+ENV ASSETS_DIR=/assets
 ENV MLMODELS_DIR=/models
 ENV PYTHONPATH=/app
+COPY assets/ /assets/
 COPY src/ .
 CMD ["sh", "-c", "uv run fastapi run /app/app.py --port ${PORT:-80}"]
