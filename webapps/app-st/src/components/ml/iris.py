@@ -17,23 +17,24 @@ def render():
         value = svc.request_body_samples[0]
 
     st.subheader("Solicitud JSON")
-    request_body = st.text_area("Defina su solicitud JSON:", height=200, value=value)
+    request_json = st.text_area("Defina su solicitud JSON:", height=200, value=value)
 
-    response_body = ""
+    response_body = None
     if st.button("Ejecutar"):
+        # validar correcta sintaxis del JSON
         try:
-            request_body = json.loads(request_body)
-            try:
-                # timeout=10 porque puede demorar dado que es un servicio serverless
-                response_body = request_mlservice(json=request_body, timeout=10)
-            except json.JSONDecodeError:
-                st.error("Invalid JSON in response body.")
-            except httpx.RequestError as e:
-                st.error(f"HTTP request failed: {e}")
+            request = json.loads(request_json)
         except json.JSONDecodeError:
-            st.error("Invalid JSON in request body.")
+            st.error("icesi: invalid JSON in request body.")
+            return
 
-    if response_body == "":
+        try:
+            response_body = request_mlservice(json=request, timeout=10)
+        except RuntimeError as e:
+            st.error(f"icesi: {e}")
+            return
+
+    if response_body is None:
         return
 
     st.subheader("Respuesta JSON")
